@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "Tony",
   "license": "MIT",
-  "private": true,
+  "private": false,
   "dependencies": {
   }
 }

@@ -8,16 +8,19 @@
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/base.min.css">
 
-  <script src="node_modules/gif.js.optimized/dist/gif.js"></script>
   <script defer src="app.js" type="module"></script>
 </head>
 <body>
   
   <div class="container">
-    <canvas width="400px" height="600px"></canvas>
     <p class="score">0</p>
+    <!-- <button class="restart">Restart</button> -->
+    <canvas width="400px"></canvas>
     <!-- <div id="playground" style="width: 500px; height: 500px"></div> -->
-    <button class="restart">Restart</button>
+    <div class="alert">
+      <button class="restart">Restart</button>
+      <button class="about"><a href="https://github.com/xoxkoo/fly-birdy" target="_blank">About</a></button>
+    </div>
   </div>
   
 </body>

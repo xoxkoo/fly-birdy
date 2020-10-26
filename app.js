@@ -1,8 +1,10 @@
 'use strict'
 
 const container = document.querySelector('.container')
+const scoreEl = document.querySelector('.score')
+const alert = document.querySelector('.alert')
 
-const alert = document.createElement('div')
+const scoreMsg = document.createElement('p')
 
 /**
  * 
@@ -12,6 +14,7 @@ const img = {
   bird_1: new Image(),
   ground: new Image(),
   column: new Image(),
+  column_r: new Image(),
   cloud: new Image()
 }
 
@@ -19,10 +22,14 @@ img.bird.src = './img/bird.svg'
 img.bird_1.src = './img/bird_gif/bird-02-01.png'
 img.ground.src = './img/ground-grass.svg'
 img.column.src = './img/column.svg'
+img.column_r.src = './img/column_r.svg'
 img.cloud.src = './img/clouds.svg'
 
 const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
+
+if (window.innerHeight <= 600) canvas.height = window.innerHeight 
+else canvas.height = 600
 
 const col = {
   sky: '#C4D8FC'
@@ -40,6 +47,7 @@ let bird = {
 let column = {
   posX: canvas.width,
   posY: 0,
+  rPosY: 0,
   width: 80,
   height: 0
 }
@@ -48,21 +56,27 @@ let grassPosX = canvas.width
 
 let options = {
   speedY: 1,
-  maxSpeedY: 4,
-  speedingY: .15, 
-  speedX: 3
+  maxSpeedY: 6,
+  speedingY: .225, 
+  speedX: 3,
+  space: 150
 }
 
 /**
  * game section
  */
 
+
 let score = 0
 let addTmp = 0
 let paused = false
 let i = 0
 
+hideAlert()
+
 columnStuff()
+
+console.log(column.heightR)
 gameLoop()
 handleEvents()
 
@@ -80,7 +94,7 @@ function gameLoop() {
 
   crash()
   
-  document.querySelector('.score').textContent = score
+  scoreEl.textContent = score
 
   requestAnimationFrame(gameLoop)
 }
@@ -95,11 +109,16 @@ function draw() {
   ctx.drawImage(img.cloud, grassPosX - canvas.width, 50, canvas.width - 100, canvas.height / 2)
   // col
   ctx.drawImage(img.column, column.posX, column.posY, column.width, column.height)
+  ctx.drawImage(img.column_r, column.posX, column.rPosY, column.width, column.height)
   //grass
   ctx.drawImage(img.ground, grassPosX, canvas.height - 45, canvas.width, 50)
   ctx.drawImage(img.ground, grassPosX - canvas.width, canvas.height - 45, canvas.width, 50)
   //draw bird
   ctx.drawImage(img.bird, bird.posX, bird.posY, bird.size, bird.size)
+
+  ctx.fillStyle = 'black'
+  // ctx.fillRect(column.posX, column.rPosY + column.height - 20, 20, 20)
+  // ctx.fillRect(bird.posX, bird.posY, 20, 20)
  
 }
 
@@ -125,6 +144,11 @@ function crash() {
 
   // hit barrier
   if (bird.posX + bird.size - 20 >= column.posX && bird.posY + bird.size - 20 >= column.posY && bird.posX <= column.posX + column.width) {
+    gameOver()
+  }
+  
+  // hit up barrier
+  if (bird.posY + 20 <= column.rPosY + column.height && bird.posX + bird.size - 20 >= column.posX && bird.posX <= column.posX + column.width){
     gameOver()
   }
 
@@ -176,7 +200,7 @@ function flyUp() {
  */
 function flyDown() {
   if (bird.posY <= canvas.height - bird.size) {
-    bird.posY++
+    bird.posY += 1 + options.speedingY
     requestAnimationFrame(flyDown)
   }
 }
@@ -244,12 +268,17 @@ function addScore() {
   addTmp = 1
   score++
   options.speedX += options.speedingY
+
+  //on every second pass we make space between barriers smaller
+  if (score % 2 == 0 && options.space > 125) options.space -= 5
+
 }
 
 function columnStuff() {
   addTmp = 0
 
-  column.height = getRandomInt(canvas.height - 100, 200)
+  column.height = getRandomInt(canvas.height - options.space - 50, canvas.height / 2)
+  column.rPosY = canvas.height - column.height * 2 - options.space
   column.posY = canvas.height - column.height
   column.posX = canvas.width
 }
@@ -268,8 +297,8 @@ function gamePause() {
  * reseting everything, GAME OVER
  */
 function gameOver() {
-  flyDown()
   gamePause()
+  flyDown()
   paused = false
 
   showAlert()
@@ -302,14 +331,21 @@ function blurAll(){
 
 function showAlert() {
   alert.classList.add('alert')
-  alert.textContent = 'You crashed. Your score is ' + score
 
-  alert.style.top = canvas.height / 2 + 'px'
-  alert.style.left = canvas.width / 2 + 'px'
+  // const restart = document.createElement('button')
+  // restart.classList.add('restart')
+  // restart.textContent = 'Restart'
 
-  container.appendChild(alert)
+  // const about = document.createElement('button')
+  // about.classList.add('about')
+  // about.textContent = 'About'
+  scoreMsg.textContent = `Congrats. You are noob. Your score is ${score}`
+  
+  alert.prepend(scoreMsg)
+
+  alert.style.display = 'block'
 }
 
 function hideAlert() {
-  container.removeChild(alert)
+  alert.style.display = 'none'
 }
