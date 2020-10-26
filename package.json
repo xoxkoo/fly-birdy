@@ -2,10 +2,8 @@
   "name": "fly-bird-game",
   "version": "0.0.1",
   "description": "Game based on flappy bird game.",
-  "main": "index.js",
+  "main": "app.js",
   "author": "Tony",
   "license": "MIT",
-  "private": false,
-  "dependencies": {
-  }
+  "private": false
 }
