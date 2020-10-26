@@ -6,6 +6,9 @@
   "author": "Tony",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "start": "node src/index.js"
+  },
   "dependencies": {
   }
 }
