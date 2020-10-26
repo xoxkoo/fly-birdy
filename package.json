@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start": "index.html"
+    "start": "app.js"
   },
   "dependencies": {
   }
