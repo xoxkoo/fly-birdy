@@ -274,7 +274,6 @@ function addScore() {
 
 }
 
-
 function columnStuff() {
   addTmp = 0
 
