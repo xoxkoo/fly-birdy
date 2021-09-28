@@ -1,3 +1,3 @@
 # game based on flappy bird
 
-[Link](https://fly-birdy.glitch.me) to game
+[Link](https://xoxkoo.github.io/fly-birdy/) to game
