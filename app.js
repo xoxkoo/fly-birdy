@@ -339,7 +339,10 @@ function showAlert() {
   // const about = document.createElement('button')
   // about.classList.add('about')
   // about.textContent = 'About'
-  scoreMsg.textContent = `Congrats. You are noob. Your score is ${score}`
+  if (score < 20)
+    scoreMsg.textContent = `Congrats. You are noob. Your score is ${score}`
+  else
+    scoreMsg.textContent = `You are not noob. Your score is ${score}`
   
   alert.prepend(scoreMsg)
 
