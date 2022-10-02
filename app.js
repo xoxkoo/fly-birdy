@@ -3,6 +3,8 @@
 const container = document.querySelector('.container')
 const scoreEl = document.querySelector('.score')
 const alert = document.querySelector('.alert')
+let counter = 1
+let fps = 15
 
 const scoreMsg = document.createElement('p')
 
@@ -12,14 +14,16 @@ const scoreMsg = document.createElement('p')
 const img = {
 	bird: new Image(),
 	bird_1: new Image(),
+	bird_2: new Image(),
 	ground: new Image(),
 	column: new Image(),
 	column_r: new Image(),
 	cloud: new Image(),
 }
 
-img.bird.src = './img/bird.svg'
-img.bird_1.src = './img/bird_gif/bird-02-01.png'
+img.bird.src = './img/bird_1.svg'
+img.bird_1.src = './img/bird.svg'
+img.bird_2.src = './img/bird_2.svg'
 img.ground.src = './img/ground-grass.svg'
 img.column.src = './img/column.svg'
 img.column_r.src = './img/column_r.svg'
@@ -42,7 +46,7 @@ let bird = {
 	size: 75,
 	posX: 50,
 	posY: canvas.height / 2,
-	rotationX: 0,
+	rotationX: -20,
 }
 
 let column = {
@@ -56,7 +60,7 @@ let column = {
 let grassPosX = canvas.width
 
 let options = {
-	speedY: 1,
+	speedY: 0.9,
 	maxSpeedY: 6,
 	speedingY: 0.225,
 	speedX: 3,
@@ -76,7 +80,6 @@ hideAlert()
 
 columnStuff()
 
-console.log(column.heightR)
 gameLoop()
 handleEvents()
 
@@ -117,16 +120,26 @@ function draw() {
 	//draw bird
 	// ctx.drawImage(img.bird, bird.posX, bird.posY, bird.size, bird.size)
 
-	rotateAndPaintImage(ctx, img.bird, bird.posX, bird.posY, bird.rotationX * (Math.PI / 180), 0.06)
-
+	if ((counter / fps) % 2 > 0 && (counter / fps) % 2 < 1) {
+		rotateAndPaintImage(ctx, img.bird, bird.posX, bird.posY, bird.rotationX * (Math.PI / 180), 0.06)
+	} else {
+		rotateAndPaintImage(ctx, img.bird_1, bird.posX, bird.posY, bird.rotationX * (Math.PI / 180), 0.06)
+	}
 	ctx.fillStyle = 'black'
+	counter++
 	// ctx.fillRect(column.posX, column.rPosY + column.height - 20, 20, 20)
 	// ctx.fillRect(bird.posX, bird.posY, 20, 20)
 }
 
 function movement() {
-	bird.posY += options.speedY
-	bird.rotationX += 1.5
+	bird.posY += bird.posY * 0.014 + options.speedY
+	// if (bird.rotationX < 0) {
+	// 	bird.rotationX = 0
+	// } else {
+	// 	bird.rotationX += 1.5
+	// }
+	if (bird.rotationX < 60) bird.rotationX += 1.5
+
 	column.posX -= options.speedX
 	grassPosX -= options.speedX
 
@@ -193,7 +206,7 @@ function flyUp() {
 
 		if (bird.rotationX > 0) {
 			bird.rotationX = -5
-		} else {
+		} else if (bird.rotationX > -30) {
 			bird.rotationX -= 5
 		}
 
@@ -211,7 +224,7 @@ function flyDown() {
 	if (bird.posY <= canvas.height - bird.size) {
 		bird.posY += 1 + options.speedingY
 		requestAnimationFrame(flyDown)
-	}
+	} else paused = true
 }
 
 let oldPos = 0
@@ -245,9 +258,11 @@ function handleEvents() {
  * setting values back to normal, game continues
  */
 function gameContinue() {
-	options.speedY = 1
+	options.speedY = 0.9
 	options.speedX = 3
 	paused = false
+
+	gameLoop()
 }
 
 /**
@@ -255,6 +270,7 @@ function gameContinue() {
  */
 function gameRestart() {
 	bird.posY = canvas.height / 2 - bird.size / 2
+	bird.rotationX = -20
 	score = 0
 	columnStuff()
 
@@ -296,7 +312,6 @@ function columnStuff() {
  * reseting values, game just stop
  */
 function gamePause() {
-	paused = true
 	bird.rotationX = 50
 	options.speedY = 0
 	options.speedX = 0
@@ -308,7 +323,6 @@ function gamePause() {
 function gameOver() {
 	gamePause()
 	flyDown()
-	paused = false
 
 	showAlert()
 }
