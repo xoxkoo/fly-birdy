@@ -58,6 +58,7 @@ let column = {
 }
 
 let grassPosX = canvas.width
+let cloudsPosX = canvas.width
 
 let options = {
 	speedY: 0.9,
@@ -109,8 +110,8 @@ function draw() {
 	ctx.fillRect(0, 0, canvas.width, canvas.height)
 
 	//clouds
-	ctx.drawImage(img.cloud, grassPosX, 50, canvas.width - 100, canvas.height / 2)
-	ctx.drawImage(img.cloud, grassPosX - canvas.width, 50, canvas.width - 100, canvas.height / 2)
+	ctx.drawImage(img.cloud, cloudsPosX, 50, canvas.width - 100, canvas.height / 2)
+	ctx.drawImage(img.cloud, cloudsPosX - canvas.width, 50, canvas.width - 100, canvas.height / 2)
 	// col
 	ctx.drawImage(img.column, column.posX, column.posY, column.width, column.height)
 	ctx.drawImage(img.column_r, column.posX, column.rPosY, column.width, column.height)
@@ -142,6 +143,7 @@ function movement() {
 
 	column.posX -= options.speedX
 	grassPosX -= options.speedX
+	cloudsPosX -= options.speedX * 1.2
 
 	if (options.speedY < options.maxSpeedY && options.speedY) options.speedY += options.speedingY
 }
@@ -192,6 +194,10 @@ function objectLoop() {
 	// grass loop
 	if (grassPosX < 0) {
 		grassPosX = canvas.width
+	}
+
+	if (cloudsPosX < 0) {
+		cloudsPosX = canvas.width
 	}
 }
 
