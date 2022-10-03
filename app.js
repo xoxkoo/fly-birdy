@@ -1,10 +1,26 @@
 'use strict'
+// import defaultOptions from './options.js'
+const defaultOptions = {
+	speedY: 0,
+	maxSpeedY: 6,
+	speedingY: 0.225,
+	speedX: 2.5,
+	space: 150,
+}
 
-const container = document.querySelector('.container')
+let options = {
+	speedY: defaultOptions.speedY,
+	maxSpeedY: defaultOptions.maxSpeedY,
+	speedingY: defaultOptions.speedingY,
+	speedX: defaultOptions.speedX,
+	space: defaultOptions.space,
+}
+
 const scoreEl = document.querySelector('.score')
 const alert = document.querySelector('.alert')
 let counter = 1
 let fps = 15
+let birdStarted = false
 
 const scoreMsg = document.createElement('p')
 
@@ -33,7 +49,10 @@ const canvas = document.querySelector('canvas')
 const ctx = canvas.getContext('2d')
 
 if (window.innerHeight <= 600) canvas.height = window.innerHeight
-else canvas.height = 600
+else canvas.height = 670
+
+if (window.innerWidth <= 400) canvas.width = window.innerWidth
+else canvas.width = 400
 
 const col = {
 	sky: '#C4D8FC',
@@ -45,7 +64,7 @@ const col = {
 let bird = {
 	size: 75,
 	posX: 50,
-	posY: canvas.height / 2,
+	posY: 200,
 	rotationX: -20,
 }
 
@@ -59,14 +78,6 @@ let column = {
 
 let grassPosX = canvas.width
 let cloudsPosX = canvas.width
-
-let options = {
-	speedY: 0.9,
-	maxSpeedY: 6,
-	speedingY: 0.225,
-	speedX: 3,
-	space: 150,
-}
 
 /**
  * game section
@@ -98,6 +109,8 @@ function gameLoop() {
 	crash()
 
 	scoreEl.textContent = score
+
+	console.log(defaultOptions)
 
 	if (!paused) {
 		requestAnimationFrame(gameLoop)
@@ -133,15 +146,17 @@ function draw() {
 }
 
 function movement() {
-	bird.posY += bird.posY * 0.014 + options.speedY
+	if (birdStarted) {
+		bird.posY += bird.posY * 0.014 + options.speedY
+		if (bird.rotationX < 60) bird.rotationX += 1.5
+		column.posX -= options.speedX
+	}
 	// if (bird.rotationX < 0) {
 	// 	bird.rotationX = 0
 	// } else {
 	// 	bird.rotationX += 1.5
 	// }
-	if (bird.rotationX < 60) bird.rotationX += 1.5
 
-	column.posX -= options.speedX
 	grassPosX -= options.speedX
 	cloudsPosX -= options.speedX * 1.2
 
@@ -205,7 +220,7 @@ function objectLoop() {
  * birdy go up
  */
 function flyUp() {
-	if (options.speedY == 0) return
+	if (options.speedY == 0 || paused) return
 
 	if (oldPos - 55 < bird.posY) {
 		options.speedY = -5
@@ -238,6 +253,8 @@ let oldPos = 0
 function handleEvents() {
 	document.addEventListener('keydown', (e) => {
 		if (e.code === 'Space') {
+			birdStarted = true
+			options.speedY = 0.9
 			oldPos = bird.posY
 			flyUp()
 		} else {
@@ -264,9 +281,11 @@ function handleEvents() {
  * setting values back to normal, game continues
  */
 function gameContinue() {
-	options.speedY = 0.9
-	options.speedX = 3
+	options.speedY = defaultOptions.speedY
+	options.speedX = defaultOptions.speedX
 	paused = false
+
+	console.log(defaultOptions.speedX)
 
 	gameLoop()
 }
@@ -275,7 +294,7 @@ function gameContinue() {
  * resseting everything, game restarts
  */
 function gameRestart() {
-	bird.posY = canvas.height / 2 - bird.size / 2
+	bird.posY = 200
 	bird.rotationX = -20
 	score = 0
 	columnStuff()
